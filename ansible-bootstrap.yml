@@ -35,7 +35,7 @@
         line: 'ansible ALL=(ALL) NOPASSWD: ALL'
         state:           present
 
-    # Configure network setting
+    # Configure network setting using HOSTNAMES AND NETPLAN
 #    - name:             Change hostname to pc0
 #      lineinfile:
 #        dest:           /etc/hostname
@@ -75,14 +75,17 @@
         marker:          "# {mark} ANSIBLE MANAGED BLOCK HOSTS"
         block:           |
           # Ungrouped
-          #pc00
+          pc00
           pc[0:5]
+
           # dev node
           [dev]
           pc[00]
+
           # private node
           #[pvt]
           #pc[0:4]
+
           # production node
           [prod]
           pc[0:4]
