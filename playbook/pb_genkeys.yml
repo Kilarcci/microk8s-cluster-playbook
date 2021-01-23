@@ -1,0 +1,21 @@
+---
+- hosts:            all
+  gather_facts:     no
+  become:           yes
+
+  tasks:
+    - name:         Generate SSH key
+      shell:        ssh-keygen -t rsa -P '' -f ~/.ssh/id_rsa
+
+    - name:         Copy public key to authorized keys
+      shell:        cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
+
+  - name:           Copy SSH public key to each device known_hosts
+    shell:          |
+      for x in "${SERVER_COUNT}"; do
+         ssh-copy-id -i .ssh/id_rsa.pub ansible@pc${x}
+      done
+    args:
+      executable:   /bin/bash
+    environment:
+      SERVER_COUNT: "{{ cluster_server_count }}"
