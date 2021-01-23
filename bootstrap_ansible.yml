@@ -1,0 +1,100 @@
+---
+- hosts:                 all
+  gather_facts:          yes
+  become:                yes
+
+  tasks:
+    # Add ansible group and user and add sudo access
+    - name:              Add ansible group
+      group:
+        name:            ansible
+        state:           present
+
+    - name:              Add ansible user
+      user:
+        name:            ansible
+        #echo -n "PiCluster" | openssl dgst -sha512
+        #(stdin)= b9db4ba46abf9f47694b5b52aac7c63bd137f29a20347125f34dbba4e312ef0d5e78a56bd65b5df3c482386c51aee08e8559e884e58e6a2a45644cd44dc423f2
+        password:        b9db4ba46abf9f47694b5b52aac7c63bd137f29a20347125f34dbba4e312ef0d5e78a56bd65b5df3c482386c51aee08e8559e884e58e6a2a45644cd44dc423f2
+        update_password: on_create
+        comment:         ansible
+        group:           ansible
+        home:            /home/ansible
+        shell:           /bin/bash
+
+    - name:              Append ansible to ubuntu groups
+      user:
+        name:            ansible
+        groups:          adm dialout cdrom floppy sudo audio dip video plugdev netdev lxd
+        append:          yes
+
+    - name:              Add sudo for ansible
+      lineinfile:
+        dest:            /etc/sudoers
+        regexp:          '^%ansible'
+        line: 'ansible ALL=(ALL) NOPASSWD: ALL'
+        state:           present
+
+    # Configure network setting
+#    - name:             Change hostname to pc0
+#      lineinfile:
+#        dest:           /etc/hostname
+#        regexp:         '^ubuntu'
+#        line:           'pc0'
+#        state:          present
+
+#    - name:             Add static network settings
+#      blockinfile:
+#        dest:           /etc/network/interfaces
+#        regexp:         '^source-directory'
+#        marker:         "# {mark} ANSIBLE MANAGED BLOCK"
+#        block:          |
+#                auto eth0
+#                iface eth0 inet static
+#                address 10.1.10.240
+#                netmask 255.255.255.0
+#                gateway 10.1.10.1
+#                dns-nameservers 10.1.10.1 8.8.8.8
+
+#    - name:             Add host mappings to /etc/hosts
+#      blockinfile:
+#        dest:           /etc/hosts
+#        block:          |
+#          {{ item.ip }} {{ item.name }}
+#        marker:         "# {mark} ANSIBLE MANAGED BLOCK {{ item.name }}"
+#      with_items:
+#      - { name: pc0, ip: 10.1.10.240 }
+#      - { name: pc1, ip: 10.1.10.241 }
+#      - { name: pc2, ip: 10.1.10.242 }
+#      - { name: pc3, ip: 10.1.10.243 }
+#      - { name: pc4, ip: 10.1.10.244 }
+
+    - name:              Add our ansible hosts setup
+      blockinfile:
+        dest:            /etc/ansible/hosts
+        marker:          "# {mark} ANSIBLE MANAGED BLOCK HOSTS"
+        block:           |
+          # Ungrouped
+          #pc00
+          pc[0:5]
+          # dev node
+          [dev]
+          pc[00]
+          # private node
+          #[pvt]
+          #pc[0:4]
+          # production node
+          [prod]
+          pc[0:4]
+
+          # master
+          [masters]
+          pc0
+
+          # worker
+          [workers]
+          pc[1:4]
+
+          # jetson
+          [jetson]
+          pc5
