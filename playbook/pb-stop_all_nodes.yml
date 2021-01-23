@@ -1,0 +1,16 @@
+---
+- hosts:            localhost
+  gather_facts:     no
+  become:           yes
+
+  tasks:
+  - name:           Stop all nodes
+    shell:          |
+      for x in "${SERVER_COUNT}"; do
+         echo "Powering off pc${x}"
+         ssh pc${x} 'sudo shutdown -P now'
+      done
+    args:
+      executable:   /bin/bash
+    environment:
+      SERVER_COUNT: "{{ cluster_server_count }}"

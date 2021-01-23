@@ -1,0 +1,16 @@
+---
+- hosts:            localhost
+  gather_facts:     no
+  become:           yes
+
+  tasks:
+  - name:           Test all nodes
+    shell:          |
+      for x in "${SERVER_COUNT}"; do
+         echo "Testing pc${x}"
+         ssh pc${x} 'df -h'
+      done
+    args:
+      executable:   /bin/bash
+    environment:
+      SERVER_COUNT: "{{ cluster_server_count }}"
