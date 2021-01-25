@@ -1,0 +1,31 @@
+---
+- all:
+    hosts:
+#      ansible_host:                  192.168.5.2
+#      192.168.10.[2-7]:
+      ansible_host:                   192.168.5.[100-104]
+  children:
+    masters:
+      hosts:
+#          192.168.10.2:
+        ansible_host:                 192.168.5.100
+    workers:
+      hosts:
+#          192.168.10.[3-7]:
+        ansible_host:                 192.168.5.[100-104]
+    dev:
+      hosts:
+        ansible_host:                 192.168.5.2
+    pvt:
+      hosts:
+        ansible_host:                 192.168.10.[2-7]
+    prod:
+      hosts:
+        ansible_host:                 192.168.5.[100-104]
+      vars:
+        ansible_user:                 vagrant
+        ansible_ssh_private_key_file: ~/.vagrant.d/insecure_private_key
+    jetson:
+      hosts:
+#          192.168.10.7
+        ansible_host:                 192.168.20.7
