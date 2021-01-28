@@ -1,0 +1,8 @@
+---
+# tasks file for status
+  - name:         Ensure microk8s snap is started and running
+    shell:        /snap/bin/microk8s.start && /snap/bin/microk8s.status --wait-ready
+    args:
+      executable: /bin/bash
+    register:     microk8s_status
+  - debug:        var=microk8s_status.stdout_lines

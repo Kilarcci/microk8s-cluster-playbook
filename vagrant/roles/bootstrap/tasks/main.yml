@@ -1,0 +1,38 @@
+---
+# tasks file for bootstrap
+  - name:                       Display cmdline.txt before editing
+    shell:                      cat /boot/firmware/cmdline.txt
+    args:
+      executable:               /bin/bash
+    register:                   cmdlinepretxt_status
+  - debug:                      var=cmdlinepretxt_status.stdout_lines
+
+  - name:                       Enable cgroup params added in /boot/firmware/cmdline.txt
+    register:                   task_result
+    ansible.builtin.lineinfile:
+      path:                     ~/boot_firmware_cmdline.txt
+      #path:                    /boot/firmware/cmdline.txt
+      insertbefore:             BOF
+      line:                     cgroup_enable=memory cgroup_memory=1
+      create:                   yes
+
+  - name:                       Display cmdline.txt before editing
+    shell:                      cat /boot/firmware/cmdline.txt
+    args:
+      executable:               /bin/bash
+    register:                   cmdlineposttxt_status
+  - debug:                      var=cmdlineposttxt_status.stdout_lines
+
+  - name:                       Reboot immediately if there was a change.
+    shell:                      "sleep 5 && sudo shutdown -r now"
+    async:                      1
+    poll:                       0
+    when:                       task_result is changed
+
+  - name:                       Wait for the reboot to complete if there was a change.
+    wait_for_connection:
+      connect_timeout:          20
+      sleep:                    5
+      delay:                    5
+      timeout:                  300
+    when:                       task_result is changed

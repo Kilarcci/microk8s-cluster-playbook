@@ -1,0 +1,18 @@
+---
+- name:                         (pre)configure and install multinode microk8s environment
+  hosts:                        test
+  vars:
+    ansible_python_interpreter: auto
+    environment:
+      K8S_AUTH_KUBECONFIG:      "{{ lookup('env', 'HOME') }}/.kube/microk8s_config"
+    roles:
+    - role:                     bootstrap
+      tags:                     ['bootstrap']
+    - role:                     install
+      tags:                     ['install']
+    - role:                     setup
+      tags:                     ['setup']
+    - role:                     jenkins
+      tags:                     ['jenkins']
+    - role:                     status
+      tags:                     ['status']
