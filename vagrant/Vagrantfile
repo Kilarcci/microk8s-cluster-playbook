@@ -7,7 +7,7 @@ config.ssh.insert_key = false
     config.vm.define "pivm#{i}" do |pi_arm64_vm|
       pi_arm64_vm.vm.box = "ubuntu/focal64"
       pi_arm64_vm.vm.hostname = "pivm#{i}.example.com"
-      pi_arm64_vm.vm.network "private_network", ip: "192.168.5.10#{i}"
+      pi_arm64_vm.vm.network "private_network", ip: "192.168.6.10#{i}"
       pi_arm64_vm.vm.provider "virtualbox" do |v|
         v.name = "pivm#{i}"
         v.memory = 512
@@ -23,8 +23,6 @@ config.ssh.insert_key = false
     SHELL
       pi_arm64_vm.vm.provision "ansible" do |ansible|
         ansible.playbook = "playbook-pre.yml"
-        #pi_arm64_vm.vm.provision :reload
-        #ansible.playbook = "playbook-post.yml"
       end
     end
   end

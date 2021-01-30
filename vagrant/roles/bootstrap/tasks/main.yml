@@ -4,8 +4,7 @@
     become:                true
     block:
     - ansible.builtin.lineinfile:
-        path:              ~/boot_firmware_cmdline.txt
-        #path:             /boot/firmware/cmdline.txt
+        path:              /boot/firmware/cmdline.txt
         insertbefore:      BOF
         line:              cgroup_enable=cpuset cgroup_enable=memory cgroup_memory=1
         create:            yes
@@ -13,7 +12,6 @@
       shell:               /usr/bin/echo 'reboot'
       register:            must_reboot
   - name:                  Display cmdline.txt after editing
-    #shell:                cat /boot/firmware/cmdline.txt
     shell:                 cat ~/boot_firmware_cmdline.txt
     args:
       executable:          /bin/bash
@@ -37,10 +35,3 @@
         delay:             60
         timeout:           300
       when:                '"reboot" in must_reboot.stdout'
-
-#    - name:               re-mount the shared folder after a Reboot
-#      mount:
-#        path:             /mnt
-#        src:              mnt
-#        fstype:           vboxsf
-#        state:            mounted
