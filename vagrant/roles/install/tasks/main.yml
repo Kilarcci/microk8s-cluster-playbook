@@ -7,8 +7,8 @@
       name:          microk8s
       classic:       yes
       state:         present
-      channel:       "{{ microk8s.version }}"
-
+      #channel:      "{{ microk8s.version }}"
+      channel:       latest/stable
   - name:            add the current user to the microk8s group
     become_method:   sudo
     become:          true
@@ -18,6 +18,8 @@
       append:        yes
 
   - name:            append aliases for common microk8s commands to the ~/.bash_aliases file
+    become_method:   sudo
+    become:          true
     block:
       - name:        create ~/.bash_aliases if it doesn't exist
         file:
@@ -34,6 +36,8 @@
             alias m8sk='microk8s kubectl'
 
   - name:            generate the ~/.kube/microk8s_config file
+    become_method:   sudo
+    become:          true
     block:
       - name:        create file
         shell:       "microk8s config | tee {{ lookup('env', 'HOME') }}/.kube/microk8s_config"
@@ -41,7 +45,7 @@
       - name:        set owner
         file:
           path:      "{{ lookup('env', 'HOME') }}/.kube/microk8s_config"
-          owner:     {{ lookup('env', 'USER') }}
+          owner:     "{{ lookup('env', 'USER') }}"
           mode:      '0600'
 
   - name:            Ensure microk8s snap is started and running

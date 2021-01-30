@@ -22,7 +22,9 @@ config.ssh.insert_key = false
       sudo swapoff -a
     SHELL
       pi_arm64_vm.vm.provision "ansible" do |ansible|
-        ansible.playbook = "playbook.yml"
+        ansible.playbook = "playbook-pre.yml"
+        #pi_arm64_vm.vm.provision :reload
+        #ansible.playbook = "playbook-post.yml"
       end
     end
   end
